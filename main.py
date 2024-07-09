@@ -1,7 +1,26 @@
 from fastapi import FastAPI
 from .routers import strategies
 
-app = FastAPI()
+description = """
+    Backtrader API allows you to build and test your own trading strategies using an algorithmic testing library, called Backtrader, which was developed by Daniel Rodriguez.
+
+    ## Strategies
+
+    * **Create strategies**
+    * **Read strategies**
+    * **Update strategies**
+    * **Delete strategies**
+"""
+
+app = FastAPI(
+    title="BacktraderAPI",
+    description=description,
+    version="1.0",
+    contact={
+        "name": "Lytton Liao",
+        "email": "lytton.liao@gmail.com",
+    },
+)
 
 app.include_router(strategies.router)
 

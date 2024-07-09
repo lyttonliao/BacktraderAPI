@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query, Path
 from pydantic import BaseModel
 from typing import Annotated
 
@@ -17,19 +17,28 @@ router = APIRouter(
     responses={404: {"description": "Not Found"}}
 )
 
-fake_strats_db = {"strategy1": {"name", }}
-
 @router.post("/")
 async def create_strategy(strategy: Strategy):
     return
 
 @router.get("/", response_model=list[Strategy])
-async def read_all_strategies():
+async def read_strategies(
+    q: Annotated[
+        str | None,
+        Query(
+            alias="search",
+            title="Query strategy name",
+            description="Query string to search for relative matches in the database"
+        )
+    ]
+):
     return
 
 @router.get("/{strategy_id}")
-async def read_strategy():
-    return {"strategy": "strategy"}
+async def read_strategy(
+    strategy_id: Annotated[int, Path(title="The ID of the strategy")]
+):
+    return {"strategy": strategy_id}
 
 @router.put(
     "/{strategy_id}",

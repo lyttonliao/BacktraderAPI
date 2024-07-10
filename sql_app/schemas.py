@@ -3,7 +3,7 @@ from pydantic import BaseModel
 class StrategyBase(BaseModel):
     name: str
     public: bool
-    tags: list[str]
+    tags: list[str] = []
 
 class StrategyCreate(StrategyBase):
     pass
@@ -24,7 +24,7 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    strategies: list[Strategy]
+    strategies: list[Strategy] = []
 
     class Config:
         orm_mode = True

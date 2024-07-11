@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
-from .database import SessionLocal, engine
+from ..database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -47,4 +47,6 @@ def read_strategy(strategy_id: int, db: Session = Depends(get_db)):
     db_strategy = crud.get_strategy(db, strategy_id)
     return db_strategy
 
-@app.get("/strategies")
+@app.get("/strategies", response_model=list[schemas.Strategy])
+def read_strategies(db: Session = Depends(get_db)):
+    return crud.get_strategies(db)

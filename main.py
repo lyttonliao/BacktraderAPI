@@ -1,5 +1,9 @@
-from fastapi import FastAPI
-from .routers import strategies
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from .routers import strategies, users
+from .crud import
 
 description = """
     Backtrader API allows you to build and test your own trading strategies using an algorithmic testing library, called Backtrader, which was developed by Daniel Rodriguez.

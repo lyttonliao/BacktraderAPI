@@ -3,8 +3,6 @@ from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import JSONResponse
 from typing import Any, Callable
 
-from ..main import app
-
 
 class RecordExistsResponse(HTTPException):
     pass

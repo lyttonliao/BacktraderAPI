@@ -1,8 +1,9 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, CheckConstraint, UniqueConstraint
-from sqlalchemy.dialects.postgresql import ARRAY, TIMESTAMP
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, CheckConstraint, UniqueConstraint, ARRAY, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
+
 from ..database import Base
+
 
 class Strategy(Base):
     __tablename__ = "strategies"
@@ -12,12 +13,11 @@ class Strategy(Base):
     public = Column(Boolean, nullable=False, index=True)
     tags = Column(ARRAY(String), index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    created_at = Column(TIMESTAMP, default=datetime.now)
-    updated_at = Column(TIMESTAMP, default=datetime.now)
-
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now)
     version = Column(Integer)
 
-    user = relationship("User", back_populates="strategies")
+    owner = relationship("User", back_populates="strategies")
 
     __table_args__ = (
         CheckConstraint('LENGTH(name) > 0', name='strategy_name_min_length'),

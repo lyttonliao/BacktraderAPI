@@ -15,3 +15,10 @@ def create_user_strategy(db: Session, strategy: strategy_schema.StrategyCreate, 
     db.commit()
     db.refresh(db_strategy)
     return db_strategy
+
+def delete_strategy(db: Session, strategy_id: int):
+    db_strategy = db.query(strategy_model.Strategy).filter(strategy_model.Strategy.id == strategy_id).first()
+    db.delete(db_strategy)
+    db.commit()
+    db.refresh(db_strategy)
+    return

@@ -1,8 +1,9 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
-from datetime import time
+from datetime import datetime
 
 from ..database import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -10,7 +11,11 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
-    created_at = Column(time)
+    created_at = Column(DateTime, default=datetime.now)
     version = Column(Integer)
 
-    strategies = relationship("strategy", back_populates="user")
+    strategies = relationship("Strategy", back_populates="owner")
+
+
+    def __repr__(self):
+        return f"<User {self.name}>"

@@ -1,17 +1,43 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
-import app.models as models
-from ..schemas import user as user_schema
+from app.models import User as user_model
+from app.schemas.user import User, UserCreate
+from app.utils.errors import RecordNotFoundError
 
-def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
 
-def get_user_by_id(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+async def get_user_by_email(db: AsyncSession, email: str) -> User:
+    user = (
+        await db.scalars(select(user_model).where(user_model.email == email))
+    ).first()
 
-def create_user(db: Session, user: user_schema.UserCreate):
-    db_user = models.User(name=user.name, email=user.email)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+    if user is None:
+        raise RecordNotFoundError
+    
+    return user
+
+
+async def get_user_by_id(db: AsyncSession, user_id: int) -> User:
+    user = (
+        await db.scalars(select(user_model).where(user_model.id == user_id))
+    ).first()
+    
+    if user is None:
+        raise RecordNotFoundError
+    
+    return user
+
+
+async def create_user(db: AsyncSession, params: UserCreate) -> User:
+    user = user_model(name=params.name, email=params.email)
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+async def delete_user(db: AsyncSession, user_id: int) -> User:
+    user = get_user_by_id(db, user_id)
+    db.delete(user)
+    await db.commit()
+    return user

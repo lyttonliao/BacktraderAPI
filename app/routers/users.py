@@ -4,54 +4,39 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
-from app.schemas import (
-    user as user_schema, 
-    strategy as strategy_schema
-)
-from app.crud import (
-    users as users_crud, 
-    strategies as strategies_crud
-)
+from app.schemas.user import User, UserCreate
+from app.schemas.strategy import Strategy, StrategyCreate
+from app.crud import users, strategies
 from app.dependencies import get_db
-
-from app.utils.errors import (
-    RecordNotFoundError,
-)
+from app.utils.errors import RecordNotFoundError
 
 router = APIRouter(
     prefix="/users",
     tags=["users"],
 )
     
-@router.post("/", response_model=user_schema.User)
-async def create_user(user: user_schema.UserCreate, db: Session = Depends(get_db)):
-    db_user = users_crud.get_user_by_email(db, user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already exists")
-    return users_crud.create_user(db, user)
-
-@router.get("/${user_id}", response_model=user_schema.User)
-async def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = users_crud.get_user_by_id(db, user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+@router.post("/", response_model=User)
+async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)) -> User:
+    user_params = UserCreate(**user.model_dump())
+    db_user = await users.create_user(db, user_params)
     return db_user
 
-@router.post("/{user_id}/strategies/", response_model=strategy_schema.Strategy)
-async def create_strategy_for_user(strategy: strategy_schema.StrategyCreate, db: Session = Depends(get_db)):
-    try:
-        db_strategy = strategies_crud.create_user_strategy(db, strategy)
-        return db_strategy
-    except IntegrityError as e:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="You have already used that name.")
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail="An unexpected error occurred")
+
+@router.get("/${user_id}", response_model=User)
+async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
+    db_user = await users.get_user_by_id(db, user_id)
+    return db_user
+
+
+@router.post("/{user_id}/strategies/", response_model=Strategy)
+async def create_strategy_for_user(strategy: StrategyCreate, db: AsyncSession = Depends(get_db)):
+    db_strategy = await strategies.create_user_strategy(db, strategy)
     
+    
+
 @router.delete("/{user_id}")
-async def delete_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = users_crud.get_user_by_id(db, user_id)
+async def delete_user(user_id: int, db: AsyncSession = Depends(get_db)):
+    db_user = users.get_user_by_id(db, user_id)
     db.delete(db_user)
     db.commit()
     db.refresh(db_user)

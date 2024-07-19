@@ -1,5 +1,4 @@
 from fastapi import Response, Request
-from .database import SessionLocal
 from .main import app
 
 @app.middleware("http")

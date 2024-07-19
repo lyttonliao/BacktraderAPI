@@ -1,24 +1,47 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from typing import Sequence
 
-from ..models import strategy as strategy_model
-from ..schemas import strategy as strategy_schema
+from app.models import Strategy as strategy_model
+from app.schemas.strategy import Strategy, StrategyUpdate, StrategyCreate
+from app.utils.errors import RecordNotFoundError
 
-def get_strategies(db: Session, skip: int = 0, limit: int = 20):
-    return db.query(strategy_model.Strategy).offset(skip).limit(limit).all()
 
-def get_strategy(db: Session, strategy_id: int):
-    return db.query(strategy_model.Strategy).filter(strategy_model.Strategy.id == strategy_id).first()
+async def get_strategies(db: AsyncSession, skip: int = 0, limit: int = 20) -> Sequence[Strategy]:
+    results = await db.execute(select(strategy_model.id))
+    strategies = results.scalars().all()
+    return strategies
 
-def create_user_strategy(db: Session, strategy: strategy_schema.StrategyCreate, user_id: int):
-    db_strategy = strategy_model.Strategy(**strategy.model_dump(), user_id=user_id)
-    db.add(db_strategy)
-    db.commit()
-    db.refresh(db_strategy)
-    return db_strategy
+async def get_strategy(db: AsyncSession, strategy_id: int) -> Strategy:
+    strategy = (
+        await db.scalars(select(strategy_model).where(strategy_model.id == strategy_id))
+    ).first()
 
-def delete_strategy(db: Session, strategy_id: int):
-    db_strategy = db.query(strategy_model.Strategy).filter(strategy_model.Strategy.id == strategy_id).first()
-    db.delete(db_strategy)
-    db.commit()
-    db.refresh(db_strategy)
-    return
+    if strategy is None:
+        raise RecordNotFoundError
+    
+    return strategy
+
+async def create_user_strategy(db: AsyncSession, params: StrategyCreate, user_id: int) -> Strategy:
+    strategy = strategy_model(**params.model_dump(), user_id=user_id)
+    db.add(strategy)
+    await db.commit()
+    await db.refresh(strategy)
+    return strategy
+
+async def update_user_strategy(db: AsyncSession, params: StrategyUpdate, strategy_id: int) -> Strategy:
+    strategy = await get_strategy(db, strategy_id)
+
+    for attr, value in params.model_dump(exclude_unset=True).items():
+        setattr(strategy, attr, value)
+    
+    db.add(strategy)
+    await db.commit()
+    await db.refresh(strategy)
+    return strategy
+
+async def delete_strategy(db: AsyncSession, strategy_id: int) -> Strategy:
+    strategy = await get_strategy(db, strategy_id)
+    await db.delete(strategy)
+    await db.commit()
+    return strategy

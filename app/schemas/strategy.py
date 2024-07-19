@@ -1,11 +1,17 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
 class StrategyBase(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     name: str
     public: bool
-    tags: list[str] = []
+    tags: Optional[list[str]] = []
 
 class StrategyCreate(StrategyBase):
+    pass
+
+class StrategyUpdate(StrategyBase):
     pass
 
 class Strategy(StrategyBase):
@@ -13,4 +19,4 @@ class Strategy(StrategyBase):
     user_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

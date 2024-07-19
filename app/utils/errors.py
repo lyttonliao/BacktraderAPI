@@ -1,92 +1,124 @@
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, Request, status
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import JSONResponse
 from typing import Any, Callable
 
 
-class RecordExistsResponse(HTTPException):
+class BacktraderAPIError(Exception):
+    """base exception class"""
+
+    def __init__(self, message: str = "Service is unavailable", name: str = "BacktraderAPI Error"):
+        self.message = message
+        self.name = name
+        super().__init__(self.message, self.name)
+
+class RecordExistsError(Exception):
+    """record already exists in database"""
+
     pass
 
-class RecordNotFoundResponse(HTTPException):
+class RecordNotFoundError(Exception):
+    """record doesn't exist in database"""
+
     pass
 
-class InternalErrorResponse(HTTPException):
+class InternalServiceError(Exception):
+    """request could not be processed due to an internal error"""
+
     pass
 
-class MethodNotAllowedResponse(HTTPException):
+class MethodNotAllowedError(Exception):
+    """invalid operation"""
+
     pass
 
-class BadRequestResponse(HTTPException):
+class BadRequestError(Exception):
+    """request could not be processed"""
+
     pass
 
-class EditConflictResponse(HTTPException):
+class EditConflictError(Exception):
+    """unable to edit this resource"""
+
     pass
 
-class InvalidTokenResponse(HTTPException):
+class InvalidTokenError(Exception):
+    """valid token must be provided"""
+
     pass
 
 
-def create_exception_handler(status_code: int, detail: Any) -> Callable[[Request, HTTPException], JSONResponse]:
-    async def exception_handler(request: Request, exc: HTTPException):
-        return JSONResponse(status_code=status_code, content=detail)
+def create_exception_handler(status_code: int, initial_detail: str) -> Callable[[Request, BacktraderAPIError], JSONResponse]:
+    async def exception_handler(request: Request, exc: BacktraderAPIError) -> JSONResponse:
+        detail = {"message": initial_detail}
+
+        if exc.message:
+            detail["message"] = exc.message
+        
+        if exc.name:
+            detail["message"] = f"{detail['message']} [{exc.name}]"
+
+        return JSONResponse(
+            status_code, content={"detail": detail["message"]}
+        )
     
     return exception_handler
 
 
 def register_error_handlers(app: FastAPI):
     app.add_exception_handler(
-        RecordExistsResponse,
-        create_exception_handler(
+        exc_class_or_status_code=RecordExistsError,
+        handler=create_exception_handler(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="the request resource already exists"
+            initial_detail="the request resource already exists"
         )
     )
 
     app.add_exception_handler(
-        RecordNotFoundResponse,
-        create_exception_handler(
+        exc_class_or_status_code=RecordNotFoundError,
+        handler=create_exception_handler(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="the requested resource could not be found"
+            initial_detail="the requested resource could not be found"
         )
     )
 
     app.add_exception_handler(
-        InternalErrorResponse,
-        create_exception_handler(
+        exc_class_or_status_code=InternalServiceError,
+        handler=create_exception_handler(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="the server encountered a problem and could not process your request"
+            initial_detail="the server encountered a problem and could not process your request"
         )
     )
 
     app.add_exception_handler(
-        BadRequestResponse,
-        create_exception_handler(
+        exc_class_or_status_code=BadRequestError,
+        handler=create_exception_handler(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="bad request"
+            initial_detail="bad request"
         )
     )
 
     app.add_exception_handler(
-        MethodNotAllowedResponse,
-        create_exception_handler(
+        exc_class_or_status_code=MethodNotAllowedError,
+        handler=create_exception_handler(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-            detail="the method is not supposed for this resource"
+            initial_detail="the method is not supposed for this resource"
         )
     )
 
     app.add_exception_handler(
-        EditConflictResponse,
-        create_exception_handler(
+        exc_class_or_status_code=EditConflictError,
+        handler=create_exception_handler(
             status_code=status.HTTP_409_CONFLICT,
-            detail="unable to update the record due to an edit conflict, please try again"
+            initial_detail="unable to update the record due to an edit conflict, please try again"
         )
     )
 
     app.add_exception_handler(
-        InvalidTokenResponse,
-        create_exception_handler(
+        exc_class_or_status_code=InvalidTokenError,
+        handler=create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="a valid token is required to access this resource"
+            initial_detail="a valid token is required to access this resource"
         )
     )
 

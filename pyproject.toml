@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "poetry"
+version = "1"
+description = "BacktraderAPI allows you to build and test your own trading strategies using an algorithmic testing library."
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+alembic = "1.13.2"
+backtrader = "^1.9.78.123"
+SQLAlchemy = "^2.0.31"
+pydantic = "^2.8.2"
+pydantic-settings = "^2.3.4"
+fastapi = "^0.111.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

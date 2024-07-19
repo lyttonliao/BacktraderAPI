@@ -14,4 +14,4 @@ class User(UserBase):
     strategies: list[Strategy] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, CheckConstr
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-from ..database import Base
+from . import Base
 
 
 class Strategy(Base):

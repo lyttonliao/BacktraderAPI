@@ -1,33 +1,36 @@
 import time
 import jwt
-from typing import Dict, Annotated
+from typing import Annotated
 from fastapi import Depends
-from fastapi.security import OAuth2AuthorizationCodeBearer
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from app.schemas.user import User
-from app.crud.users import get_user_by_id
-from app.utils.errors import InvalidTokenError
-from app.utils.config import app_settings
-from app.schemas.token import TokenData
-from app.crud.users import get_user_by_email
+from ..schemas.user import User
+from ..crud.users import get_user_by_id
+from ..utils.errors import InvalidTokenError, ExpiredTokenError
+from ..utils.config import app_settings
+from ..schemas.token import TokenData
+from ..crud.users import get_user_by_email
 
 
-oauth2_scheme = OAuth2AuthorizationCodeBearer(t)
+with open("C:/Users/xlord/.ssh/id_rsa", "r") as f:
+    SECRET_KEY = f.read()
 
 
-async def authenticate_user(db: AsyncSession, user_id: int) -> User:
-    user = await get_user_by_id(db, user_id)
-
-    if user is None:
-        return False
+def decode_jwt(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[app_settings.algorithm])
+    except jwt.ExpiredSignatureError:
+        raise ExpiredTokenError
+    except jwt.InvalidTokenError:
+        raise InvalidTokenError
     
-    return user
+    return payload
 
 
-async def get_current_user(db: AsyncSession, token: Annotated[str, Depends(oauth2_scheme)]):
-    payload = jwt.decode(token, app_settings.secret_key, algorithms=[app_settings.algorithm])
+async def get_current_user(db: AsyncSession, token: str):
+    payload = decode_jwt(token)
     email = payload.get("sub")
 
     if email is None:

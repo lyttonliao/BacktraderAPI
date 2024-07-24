@@ -8,14 +8,14 @@ from sqlalchemy.ext.asyncio import (
     AsyncConnection
 )
 from typing import AsyncGenerator
-from functools import lru_cache
 
-from app.utils.errors import InternalServiceError
-from app.utils.config import app_settings
+from ..utils.errors import InternalServiceError
+from ..utils.config import app_settings
 
 
 class DatabaseSessionManager:
     def __init__(self, host: str):
+        print('host', host)
         self.engine: AsyncEngine = create_async_engine(host)
         self._sessionmaker: async_sessionmaker[AsyncSession] = async_sessionmaker(
             autocommit=False, bind=self.engine
@@ -30,7 +30,7 @@ class DatabaseSessionManager:
         self._sessionmaker = None
 
     @contextlib.asynccontextmanager
-    async def connect(self) -> AsyncGenerator[AsyncConnection]:
+    async def connect(self) -> AsyncGenerator[AsyncConnection, None]:
         if self.engine is None:
             raise InternalServiceError
         
@@ -42,18 +42,23 @@ class DatabaseSessionManager:
                 raise InternalServiceError
             
     @contextlib.asynccontextmanager
-    async def session(self) -> AsyncGenerator[AsyncConnection]:
+    async def session(self) -> AsyncGenerator[AsyncConnection, None]:
         if not self._sessionmaker:
             raise InternalServiceError
         
         session = self._sessionmaker
         try:
             yield session
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             await session.rollback()
             raise InternalServiceError
         finally:
             await session.close()
 
 
-session_manager = DatabaseSessionManager(app_settings.db_dsn)
+session_manager = DatabaseSessionManager(host=app_settings.db_dsn)
+
+
+async def get_db():
+    async with session_manager.session() as session:
+        yield session

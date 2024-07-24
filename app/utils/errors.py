@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from typing import Callable
 
 
-class BacktraderAPIError(Exception):
+class BacktraderAPIException(Exception):
     """base exception class"""
 
     def __init__(self, message: str = "Service is unavailable", name: str = "BacktraderAPI Error"):
@@ -11,44 +11,49 @@ class BacktraderAPIError(Exception):
         self.name = name
         super().__init__(self.message, self.name)
 
-class RecordExistsError(Exception):
+class RecordExistsError(BacktraderAPIException):
     """record already exists in database"""
 
     pass
 
-class RecordNotFoundError(Exception):
+class RecordNotFoundError(BacktraderAPIException):
     """record doesn't exist in database"""
 
     pass
 
-class InternalServiceError(Exception):
+class InternalServiceError(BacktraderAPIException):
     """request could not be processed due to an internal error"""
 
     pass
 
-class MethodNotAllowedError(Exception):
+class MethodNotAllowedError(BacktraderAPIException):
     """invalid operation"""
 
     pass
 
-class BadRequestError(Exception):
+class BadRequestError(BacktraderAPIException):
     """request could not be processed"""
 
     pass
 
-class EditConflictError(Exception):
+class EditConflictError(BacktraderAPIException):
     """unable to edit this resource"""
 
     pass
 
-class InvalidTokenError(Exception):
+class InvalidTokenError(BacktraderAPIException):
     """valid token must be provided"""
 
     pass
 
+class ExpiredTokenError(BacktraderAPIException):
+    """token has expired"""
 
-def create_exception_handler(status_code: int, initial_detail: str) -> Callable[[Request, BacktraderAPIError], JSONResponse]:
-    async def exception_handler(request: Request, exc: BacktraderAPIError) -> JSONResponse:
+    pass
+
+
+def create_exception_handler(status_code: int, initial_detail: str) -> Callable[[Request, BacktraderAPIException], JSONResponse]:
+    async def exception_handler(request: Request, exc: BacktraderAPIException) -> JSONResponse:
         detail = {"message": initial_detail}
 
         if exc.message:
@@ -118,6 +123,14 @@ def register_error_handlers(app: FastAPI):
         handler=create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
             initial_detail="a valid token is required to access this resource"
+        )
+    )
+
+    app.add_exception_handler(
+        exc_class_or_status_code=ExpiredTokenError,
+        handler=create_exception_handler(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            initial_detail="the token has expired"
         )
     )
 

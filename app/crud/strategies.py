@@ -22,8 +22,8 @@ async def get_strategy(db: AsyncSession, strategy_id: int) -> Strategy:
     
     return strategy
 
-async def create_user_strategy(db: AsyncSession, params: StrategyCreate, user_id: int) -> Strategy:
-    strategy = strategy_model(**params.model_dump(), user_id=user_id)
+async def create_user_strategy(db: AsyncSession, params: StrategyCreate) -> Strategy:
+    strategy = strategy_model(**params.model_dump())
     db.add(strategy)
     await db.commit()
     await db.refresh(strategy)

@@ -11,7 +11,7 @@ from typing import AsyncGenerator
 from functools import lru_cache
 
 from app.utils.errors import InternalServiceError
-from app.utils.config import Settings
+from app.utils.config import app_settings
 
 
 class DatabaseSessionManager:
@@ -55,9 +55,5 @@ class DatabaseSessionManager:
         finally:
             await session.close()
 
-@lru_cache
-def get_settings():
-    return Settings()
 
-settings = get_settings()
-session_manager = DatabaseSessionManager(settings.db_dsn)
+session_manager = DatabaseSessionManager(app_settings.db_dsn)

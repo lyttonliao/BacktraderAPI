@@ -27,11 +27,12 @@ async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
     db_user = await users.get_user_by_id(db, user_id)
     return db_user
 
-
+# require current_user data 
 @router.post("/{user_id}/strategies/", response_model=Strategy)
 async def create_strategy_for_user(strategy: StrategyCreate, db: AsyncSession = Depends(get_db)):
     db_strategy = await strategies.create_user_strategy(db, strategy)
     
+    pass
     
 
 @router.delete("/{user_id}")

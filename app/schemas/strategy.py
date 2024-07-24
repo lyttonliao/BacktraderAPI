@@ -9,7 +9,7 @@ class StrategyBase(BaseModel):
     tags: Optional[list[str]] = []
 
 class StrategyCreate(StrategyBase):
-    pass
+    user_id: int
 
 class StrategyUpdate(StrategyBase):
     pass

@@ -7,11 +7,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from ..schemas.user import User
-from ..crud.users import get_user_by_id
 from ..utils.errors import InvalidTokenError, ExpiredTokenError
 from ..utils.config import app_settings
 from ..schemas.token import TokenData
 from ..crud.users import get_user_by_email
+from ..database.session import get_db
 
 
 with open("C:/Users/xlord/.ssh/id_rsa", "r") as f:
@@ -29,7 +29,10 @@ def decode_jwt(token: str):
     return payload
 
 
-async def get_current_user(db: AsyncSession, token: str):
+async def get_current_user(
+    token: str,
+    db: Annotated[AsyncSession, Depends(get_db)], 
+):
     payload = decode_jwt(token)
     email = payload.get("sub")
 

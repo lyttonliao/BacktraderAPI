@@ -51,6 +51,11 @@ class ExpiredTokenError(BacktraderAPIException):
 
     pass
 
+class StatusForbiddenError(BacktraderAPIException):
+    """user cannot access this resource"""
+
+    pass
+
 
 def create_exception_handler(status_code: int, initial_detail: str) -> Callable[[Request, BacktraderAPIException], JSONResponse]:
     async def exception_handler(request: Request, exc: BacktraderAPIException) -> JSONResponse:
@@ -71,6 +76,39 @@ def create_exception_handler(status_code: int, initial_detail: str) -> Callable[
 
 def register_error_handlers(app: FastAPI):
     app.add_exception_handler(
+        exc_class_or_status_code=BadRequestError,
+        handler=create_exception_handler(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            initial_detail="bad request"
+        )
+    )
+
+    app.add_exception_handler(
+        exc_class_or_status_code=InvalidTokenError,
+        handler=create_exception_handler(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            initial_detail="a valid token is required to access this resource"
+        )
+    )
+
+    app.add_exception_handler(
+        exc_class_or_status_code=ExpiredTokenError,
+        handler=create_exception_handler(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            initial_detail="the token has expired"
+        )
+    )
+
+    app.add_exception_handler(
+        exc_class_or_status_code=StatusForbiddenError,
+        handler=create_exception_handler(
+            status_code=status.HTTP_403_FORBIDDEN,
+            initial_detail="your account doesn't have the necessary permissions to access this resource"
+        )
+    )
+
+        
+    app.add_exception_handler(
         exc_class_or_status_code=RecordExistsError,
         handler=create_exception_handler(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -83,22 +121,6 @@ def register_error_handlers(app: FastAPI):
         handler=create_exception_handler(
             status_code=status.HTTP_404_NOT_FOUND,
             initial_detail="the requested resource could not be found"
-        )
-    )
-
-    app.add_exception_handler(
-        exc_class_or_status_code=InternalServiceError,
-        handler=create_exception_handler(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            initial_detail="the server encountered a problem and could not process your request"
-        )
-    )
-
-    app.add_exception_handler(
-        exc_class_or_status_code=BadRequestError,
-        handler=create_exception_handler(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            initial_detail="bad request"
         )
     )
 
@@ -119,18 +141,9 @@ def register_error_handlers(app: FastAPI):
     )
 
     app.add_exception_handler(
-        exc_class_or_status_code=InvalidTokenError,
+        exc_class_or_status_code=InternalServiceError,
         handler=create_exception_handler(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            initial_detail="a valid token is required to access this resource"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            initial_detail="the server encountered a problem and could not process your request"
         )
     )
-
-    app.add_exception_handler(
-        exc_class_or_status_code=ExpiredTokenError,
-        handler=create_exception_handler(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            initial_detail="the token has expired"
-        )
-    )
-

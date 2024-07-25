@@ -12,6 +12,7 @@ async def get_strategies(db: AsyncSession, skip: int = 0, limit: int = 20) -> Se
     strategies = results.scalars().all()
     return strategies
 
+
 async def get_strategy(db: AsyncSession, strategy_id: int) -> Strategy:
     strategy = (
         await db.scalars(select(strategy_model).where(strategy_model.id == strategy_id))
@@ -22,12 +23,14 @@ async def get_strategy(db: AsyncSession, strategy_id: int) -> Strategy:
     
     return strategy
 
+
 async def create_user_strategy(db: AsyncSession, params: StrategyCreate) -> Strategy:
     strategy = strategy_model(**params.model_dump())
     db.add(strategy)
     await db.commit()
     await db.refresh(strategy)
     return strategy
+
 
 async def update_user_strategy(db: AsyncSession, params: StrategyUpdate, strategy_id: int) -> Strategy:
     strategy = await get_strategy(db, strategy_id)
@@ -39,6 +42,7 @@ async def update_user_strategy(db: AsyncSession, params: StrategyUpdate, strateg
     await db.commit()
     await db.refresh(strategy)
     return strategy
+
 
 async def delete_strategy(db: AsyncSession, strategy_id: int) -> Strategy:
     strategy = await get_strategy(db, strategy_id)

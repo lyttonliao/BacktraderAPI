@@ -9,10 +9,15 @@ class Settings(BaseSettings):
     db_max_idle_time: str = "15m"
     algorithm: str
     access_token_expire_minutes: int = 30
+    debug: bool = False
+    
+    version: int = 1
+    project_name: str = "BacktraderAPI"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
+@lru_cache
 def get_settings():
     settings = Settings()
     return settings

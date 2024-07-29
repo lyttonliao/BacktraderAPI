@@ -13,7 +13,7 @@ from ..auth.auth_bearer import JWTBearer
 from ..auth.auth_handler import get_current_user
 
 router = APIRouter(
-    prefix="/users",
+    prefix="/v1/users",
     tags=["users"],
 )
     

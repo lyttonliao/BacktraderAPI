@@ -9,7 +9,7 @@ from ..auth.auth_bearer import JWTBearer
 
 
 router = APIRouter(
-    prefix="/strategies",
+    prefix="/v1/strategies",
     tags=["strategies"],
 )
 

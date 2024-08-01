@@ -1,5 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, CheckConstraint, UniqueConstraint, ARRAY, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, Column, Integer, String, CheckConstraint, UniqueConstraint, ARRAY, DateTime
 from datetime import datetime
 
 from . import Base
@@ -12,16 +11,14 @@ class Strategy(Base):
     name = Column(String, nullable=False, index=True)
     public = Column(Boolean, nullable=False, index=True)
     tags = Column(ARRAY(String), index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now)
     version = Column(Integer)
 
-    owner = relationship("User", back_populates="strategies")
-
     __table_args__ = (
         CheckConstraint('LENGTH(name) > 0', name='strategy_name_min_length'),
-        CheckConstraint('LENGTH(name) <= 500', name='strategy_name_max_length'),
+        CheckConstraint('LENGTH(name) <= 200', name='strategy_name_max_length'),
         UniqueConstraint('name', 'user_id', name='uq_strategy_name_user_id')
     )
 

@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     trusted_origins: str
     
     version: int = 1
-    project_name: str = "BacktraderAPI"
+    project_name: str = "BacktestingAPI"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

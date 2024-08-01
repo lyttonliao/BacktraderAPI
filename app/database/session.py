@@ -18,7 +18,7 @@ class DatabaseSessionManager:
         print('host', host)
         self.engine: AsyncEngine = create_async_engine(host)
         self._sessionmaker: async_sessionmaker[AsyncSession] = async_sessionmaker(
-            autocommit=False, bind=self.engine
+            autocommit=False, bind=self.engine, expire_on_commit=False
         )
 
     async def close(self):
@@ -40,20 +40,19 @@ class DatabaseSessionManager:
             except SQLAlchemyError:
                 await connection.rollback()
                 raise InternalServiceError
+            finally:
+                connection.close()
             
     @contextlib.asynccontextmanager
     async def session(self) -> AsyncGenerator[AsyncConnection, None]:
         if not self._sessionmaker:
             raise InternalServiceError
         
-        session = self._sessionmaker
+        session = self._sessionmaker.begin()
         try:
             yield session
         except SQLAlchemyError:
-            await session.rollback()
             raise InternalServiceError
-        finally:
-            await session.close()
 
 
 session_manager = DatabaseSessionManager(host=app_settings.db_dsn)

@@ -35,6 +35,8 @@ async def create_user_strategy(db: AsyncSession, params: StrategyCreate) -> Stra
 async def update_user_strategy(db: AsyncSession, params: StrategyUpdate, strategy_id: int, user_id: int) -> Strategy:
     db_strategy = await get_strategy(db, strategy_id)
     
+    if not db_strategy:
+        raise RecordNotFoundError
     if db_strategy.user_id != user_id:
         raise StatusForbiddenError
 
@@ -50,6 +52,8 @@ async def update_user_strategy(db: AsyncSession, params: StrategyUpdate, strateg
 async def delete_strategy(db: AsyncSession, strategy_id: int, user_id: int) -> Strategy:
     db_strategy = await get_strategy(db, strategy_id)
 
+    if not db_strategy:
+        raise RecordNotFoundError
     if db_strategy.user_id != user_id:
         raise StatusForbiddenError
 

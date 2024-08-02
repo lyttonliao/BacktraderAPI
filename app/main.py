@@ -39,7 +39,7 @@ app = FastAPI(
         "email": "lytton.liao@gmail.com",
     },
     debug=app_settings.debug,
-    version=app_settings.version,
+    version=str(app_settings.version),
     lifespan=lifespan
 )
 

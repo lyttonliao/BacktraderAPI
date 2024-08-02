@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "poetry"
+name = "BacktestingAPI"
 version = "1"
-description = "BacktraderAPI allows you to build and test your own trading strategies using an algorithmic testing library."
-authors = ["Your Name <you@example.com>"]
+description = "BacktestingAPI allows you to build and test your own trading strategies using an algorithmic testing library."
+authors = [github.com/lyttonliao]
 readme = "README.md"
 
 [tool.poetry.dependencies]

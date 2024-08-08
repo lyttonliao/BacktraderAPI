@@ -14,7 +14,7 @@ class Strategy(Base):
     user_id = Column(Integer, index=True)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now)
-    version = Column(Integer)
+    version = Column(Integer, default=1)
 
     __table_args__ = (
         CheckConstraint('LENGTH(name) > 0', name='strategy_name_min_length'),

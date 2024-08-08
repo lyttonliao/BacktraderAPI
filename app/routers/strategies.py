@@ -20,8 +20,8 @@ async def create_strategy_for_user(
     db: Annotated[AsyncSession, Depends(get_db)], 
     user_id: Annotated[str, Depends(JWTBearer())]
 ):   
-    print(db, user_id)
-    strategy_params = StrategyCreate(**strategy.model_dump(), user_id=user_id)
+    strategy_params = StrategyCreate(**strategy.model_dump())
+    strategy_params.user_id = user_id
     db_strategy = await strategies.create_user_strategy(db, strategy_params)
     return db_strategy
 
@@ -32,14 +32,12 @@ async def read_strategy(
     db: Annotated[AsyncSession, Depends(get_db)]
 ):
     db_strategy = await strategies.get_strategy(db, strategy_id)
-    print(db_strategy)
     return db_strategy
 
 
 @router.get("/", response_model=list[Strategy], dependencies=[Depends(JWTBearer())])
 async def read_strategies(db: Annotated[AsyncSession, Depends(get_db)]):
     db_strategies = await strategies.get_strategies(db)
-    print(db_strategies)
     return db_strategies
 
 

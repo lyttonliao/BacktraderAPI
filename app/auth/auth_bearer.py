@@ -13,7 +13,6 @@ class JWTBearer(HTTPBearer):
 
 
     async def __call__(self, request: Request):
-        print('hit')
         credentials: HTTPAuthorizationCredentials = await super().__call__(request)
         if credentials:
             if not credentials.scheme == "Bearer":
@@ -24,7 +23,7 @@ class JWTBearer(HTTPBearer):
         user_id = self.get_current_user(credentials.credentials)
         if user_id is None:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token")
-        print(user_id)
+
         return user_id
     
 

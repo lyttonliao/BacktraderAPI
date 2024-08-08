@@ -9,14 +9,14 @@ class StrategyBase(BaseModel):
     tags: Optional[list[str]] = []
 
 class StrategyCreate(StrategyBase):
-    user_id: Optional[int]
+    user_id: Optional[int] = None
 
 class StrategyUpdate(StrategyBase):
     pass
 
 class Strategy(StrategyBase):
     id: int
-    user_id: Optional[int]
+    user_id: Optional[int] = None
 
     class Config:
         from_attributes = True

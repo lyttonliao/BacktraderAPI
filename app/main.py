@@ -40,7 +40,7 @@ app = FastAPI(
     },
     debug=app_settings.debug,
     version=str(app_settings.version),
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 

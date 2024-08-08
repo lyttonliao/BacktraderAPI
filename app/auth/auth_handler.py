@@ -1,23 +1,28 @@
 import jwt
-import rsa
+import cryptography
 
 from ..utils.errors import InvalidTokenError, ExpiredTokenError
-from ..utils.config import app_settings
 
 
-def private_key():
-    with open("C:/Users/xlord/.ssh/id_rsa.pub", mode="rb") as f:
+def get_key():
+    with open("C:/Users/xlord/.ssh/id_ecdsa.pub", mode="r") as f:
         key_data = f.read()
-        key = rsa.PublicKey._load_pkcs1_pem(key_data)
 
-    return key
+    return key_data
 
 
 def decode_jwt(token: str):
-    key = private_key()
+    key = get_key()
 
     try:
-        payload = jwt.decode(token, key, algorithms=[app_settings.algorithm])
+        payload = jwt.decode(
+            token, 
+            key, 
+            algorithms=["ES256"],
+            audience="BacktestingApi",
+            issuer="StratCheck",
+        )
+
     except jwt.ExpiredSignatureError:
         raise ExpiredTokenError
     except jwt.InvalidTokenError:

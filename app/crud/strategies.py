@@ -8,7 +8,7 @@ from ..utils.errors import RecordNotFoundError, StatusForbiddenError
 
 
 async def get_strategies(db: AsyncSession, offset: int = 0, limit: int = 20) -> Sequence[Strategy]:
-    results = await db.execute(select(strategy_model.id).limit(limit).offset(offset))
+    results = await db.execute(select(strategy_model).limit(limit).offset(offset))
     db_strategies = results.scalars().all()
     return db_strategies
 

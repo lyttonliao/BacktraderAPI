@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncConnection
 from typing import Annotated
 
 from ..schemas.strategy import Strategy, StrategyCreate, StrategyUpdate
@@ -14,30 +14,33 @@ router = APIRouter(
 )
 
 
+@router.post("/", response_model=Strategy, dependencies=[Depends(JWTBearer())])
+async def create_strategy_for_user(
+    strategy: StrategyCreate, 
+    db: Annotated[AsyncSession, Depends(get_db)], 
+    user_id: Annotated[str, Depends(JWTBearer())]
+):   
+    print(db, user_id)
+    strategy_params = StrategyCreate(**strategy.model_dump(), user_id=user_id)
+    db_strategy = await strategies.create_user_strategy(db, strategy_params)
+    return db_strategy
+
+
 @router.get("/{strategy_id}", response_model=Strategy, dependencies=[Depends(JWTBearer())])
 async def read_strategy(
     strategy_id: int, 
     db: Annotated[AsyncSession, Depends(get_db)]
 ):
-    db_strategy = strategies.get_strategy(db, strategy_id)
+    db_strategy = await strategies.get_strategy(db, strategy_id)
+    print(db_strategy)
     return db_strategy
 
 
 @router.get("/", response_model=list[Strategy], dependencies=[Depends(JWTBearer())])
 async def read_strategies(db: Annotated[AsyncSession, Depends(get_db)]):
     db_strategies = await strategies.get_strategies(db)
+    print(db_strategies)
     return db_strategies
-
-
-@router.post("/", response_model=Strategy)
-async def create_strategy_for_user(
-    strategy: StrategyCreate, 
-    db: Annotated[AsyncSession, Depends(get_db)], 
-    user_id: Annotated[str, Depends(JWTBearer())]
-):    
-    strategy_params = StrategyCreate(**strategy.model_dump(), user_id=user_id)
-    db_strategy = await strategies.create_user_strategy(db, strategy_params)
-    return db_strategy
 
 
 @router.patch("/{strategy_id}", response_model=Strategy)

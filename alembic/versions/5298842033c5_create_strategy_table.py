@@ -20,16 +20,19 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.create_table(
-        'strategy',
+        'strategies',
+        sa.Column('id', sa.Integer, primary_key=True, nullable=False, index=True),
         sa.Column('name', sa.String(200), nullable=False),
-        sa.Column('public', sa.Boolean(), nullable=False, default=False),
+        sa.Column('public', sa.Boolean(), nullable=False, default=False, index=True),
         sa.Column('tags', sa.ARRAY(sa.String)),
-        sa.Column('user_id', sa.BigInteger),
+        sa.Column('user_id', sa.Integer, index=True),
         sa.Column('created_at', sa.DateTime(), server_default=sa.func.now(), nullable=False),
         sa.Column('updated_at', sa.DateTime(), server_default=sa.func.now(), nullable=False),
-        sa.Column('version', sa.Integer, nullable=False, default=1)
+        sa.Column('version', sa.Integer, nullable=False, default=1),
+        sa.UniqueConstraint('user_id', 'name', name='uq_user_id_name')
     )
 
 
+
 def downgrade() -> None:
-    op.drop_table('strategy')
+    op.drop_table('strategies')

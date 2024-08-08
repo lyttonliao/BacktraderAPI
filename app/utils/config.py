@@ -7,7 +7,6 @@ class Settings(BaseSettings):
     db_max_open_conns: int = 25
     db_max_idle_conns: int = 25
     db_max_idle_time: str = "15m"
-    algorithm: str
     access_token_expire_minutes: int = 30
     debug: bool = False
     trusted_origins: str

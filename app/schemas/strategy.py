@@ -5,7 +5,7 @@ class StrategyBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     name: str
-    public: bool
+    public: Optional[bool] = False
     tags: Optional[list[str]] = []
 
 class StrategyCreate(StrategyBase):

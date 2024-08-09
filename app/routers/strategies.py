@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncConnection
+from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
 from ..schemas.strategy import Strategy, StrategyCreate, StrategyUpdate

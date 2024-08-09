@@ -1,5 +1,4 @@
 import jwt
-import cryptography
 
 from ..utils.errors import InvalidTokenError, ExpiredTokenError
 

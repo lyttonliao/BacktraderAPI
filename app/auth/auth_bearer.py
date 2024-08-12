@@ -3,10 +3,12 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from .auth_handler import decode_jwt
 
+
 class JWTBearer(HTTPBearer):
     def __init__(self, auto_error: bool = True):
 
         super().__init__(auto_error=auto_error)
+
 
     async def __call__(self, request: Request):
         credentials: HTTPAuthorizationCredentials = await super().__call__(request)
@@ -15,19 +17,29 @@ class JWTBearer(HTTPBearer):
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid authentication scheme")
             if not self.verify_jwt(credentials.credentials):
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token or expired token")
-        else:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid authorization code")
-        return credentials.credentials
+
+        user_id = self.get_current_user(credentials.credentials)
+        if user_id is None:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token")
+
+        return user_id
     
+
+    @classmethod
+    def get_current_user(self, token: str):
+        payload = decode_jwt(token)
+
+        if not payload:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid token")
+        
+        return payload["sub"]
+        
+
+    @classmethod
     def verify_jwt(self, token: str) -> bool:
-        isTokenValid: bool = False
+        payload = decode_jwt(token)
 
-        try:
-            payload = decode_jwt(token)
-            
-            if payload:
-                isTokenValid = True
-        except:
-            payload = None
-
-        return isTokenValid
+        if payload is None:
+            return False
+        
+        return True

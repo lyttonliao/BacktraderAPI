@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
+# from contextlib import asynccontextmanager
 
-from .routers import strategies, users
+from .routers import strategies
 from .utils.errors import register_error_handlers
 from .utils.config import app_settings
-from .database.session import session_manager
+# from .database.session import session_manager
 
 
 description = """
@@ -20,15 +20,15 @@ description = """
 """
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-        Function that handles startup and shutdown events
-    """
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     """
+#         Function that handles startup and shutdown events
+#     """
 
-    yield
-    if session_manager.engine is not None:
-        await session_manager.close()
+#     yield
+#     if session_manager.engine is not None:
+#         await session_manager.close()
 
 
 app = FastAPI(
@@ -39,13 +39,11 @@ app = FastAPI(
         "email": "lytton.liao@gmail.com",
     },
     debug=app_settings.debug,
-    version=app_settings.version,
-    lifespan=lifespan
+    version=str(app_settings.version),
+    # lifespan=lifespan,
 )
 
-
 app.include_router(strategies.router)
-app.include_router(users.router)
 
 register_error_handlers(app)
 

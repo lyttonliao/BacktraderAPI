@@ -5,18 +5,18 @@ class StrategyBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     name: str
-    public: bool
+    public: Optional[bool] = False
     tags: Optional[list[str]] = []
 
 class StrategyCreate(StrategyBase):
-    user_id: int
+    user_id: Optional[int] = None
 
 class StrategyUpdate(StrategyBase):
     pass
 
 class Strategy(StrategyBase):
     id: int
-    user_id: int
+    user_id: Optional[int] = None
 
     class Config:
         from_attributes = True

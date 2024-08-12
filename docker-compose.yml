@@ -7,27 +7,34 @@ services:
       args:
         DEV: "true"
     environment:
-      - PYTHONPATH=/app
-      - DEBUG=1
+      PYTHONPATH: /app
+      DEBUG: 1
+      TRUSTED_ORIGINS: ${TRUSTED_ORIGINS}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "8080:8080"
+      - "8000:8000"
     env_file:
       - path: ./.env
         required: true
-    command: uvicorn main:app --reload --host 0.0.0.0 -port 8080
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
     volumes:
-      - ./app:/app
+      - ./:/app
     depends_on:
       - db
     links:
       - db
-    working_dir: /
+    working_dir: /app
   
   db:
-    image: postgres:latest
+    image: postgres:15
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - backtrader_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB: ${DB_NAME}
-      - POSTGRES_USER: ${DB_USER}
-      - POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+volumes:
+  backtrader_data:

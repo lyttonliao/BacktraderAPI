@@ -1,18 +1,25 @@
 [tool.poetry]
-name = "poetry"
+name = "app"
 version = "1"
-description = "BacktraderAPI allows you to build and test your own trading strategies using an algorithmic testing library."
-authors = ["Your Name <you@example.com>"]
+description = ""
+authors = ["Lytton Liao <lytton.liao@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-alembic = "1.13.2"
+sqlalchemy = "^2.0.32"
+fastapi = "^0.112.0"
+alembic = "^1.13.2"
 backtrader = "^1.9.78.123"
-SQLAlchemy = "^2.0.31"
+vectorbt = "^0.26.2"
+crypto = "^1.4.1"
+poetry = "^1.8.3"
+psycopg2 = "^2.9.9"
 pydantic = "^2.8.2"
-pydantic-settings = "^2.3.4"
-fastapi = "^0.111.1"
+pyjwt = "^2.9.0"
+pydantic-settings = "^2.4.0"
+asyncpg = "^0.29.0"
+uvicorn = "^0.30.5"
 
 
 [build-system]

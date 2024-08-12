@@ -18,7 +18,7 @@ def decode_jwt(token: str):
             token, 
             key, 
             algorithms=["ES256"],
-            audience="BacktestingApi",
+            audience="BacktraderAPI",
             issuer="StratCheck",
         )
 

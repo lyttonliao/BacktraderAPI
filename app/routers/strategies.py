@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
-from ..schemas.strategy import Strategy, StrategyCreate, StrategyUpdate
-from ..database.session import get_db
-from ..crud import strategies
-from ..auth.auth_bearer import JWTBearer
+from app.schemas.strategy import Strategy, StrategyCreate, StrategyUpdate
+from app.database.session import get_db
+from app.crud import strategies
+from app.auth.auth_bearer import JWTBearer
 
 
 router = APIRouter(

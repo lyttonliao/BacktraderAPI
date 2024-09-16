@@ -2,9 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Sequence
 
-from ..models import Strategy as strategy_model
-from ..schemas.strategy import Strategy, StrategyUpdate, StrategyCreate
-from ..utils.errors import RecordNotFoundError, StatusForbiddenError
+from app.models import Strategy as strategy_model
+from app.schemas.strategy import Strategy, StrategyUpdate, StrategyCreate
+from app.utils.errors import RecordNotFoundError, StatusForbiddenError
 
 
 async def get_strategies(db: AsyncSession, offset: int = 0, limit: int = 20) -> Sequence[Strategy]:

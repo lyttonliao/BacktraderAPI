@@ -1,6 +1,6 @@
 import jwt
 
-from ..utils.errors import InvalidTokenError, ExpiredTokenError
+from app.utils.errors import InvalidTokenError, ExpiredTokenError
 
 
 def get_key():

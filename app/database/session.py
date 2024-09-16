@@ -9,8 +9,8 @@ from sqlalchemy.ext.asyncio import (
 )
 from typing import AsyncGenerator
 
-from ..utils.errors import InternalServiceError
-from ..utils.config import app_settings
+from app.utils.errors import InternalServiceError
+from app.utils.config import app_settings
 
 
 class DatabaseSessionManager:

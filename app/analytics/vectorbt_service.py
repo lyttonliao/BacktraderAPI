@@ -1,7 +1,5 @@
 import vectorbt as vbt
 import pandas as pd
-import numpy as np
-import datetime
 
 from typing import Optional, Dict, List
 
@@ -78,7 +76,6 @@ def add_bbands_indicator(close: List[int], window: int = 20, alpha: int = 2):
     entries = bbands.close_below(lower) & bbands.close_above(lower_shifted)
     exits = bbands.close_above(upper) & bbands.close_below(upper_shifted)
     fig = bbands.plot()
-    fig.show()
     return entries, exits, fig
 
 
@@ -109,8 +106,8 @@ def run_strategy_handler(
     symbol: List[str],
     start_time: str,
     data: Dict[str, List[Dict]],
-    end_time: str = datetime.datetime.now(),
-    interval: str = 'max',
+    end_time: str,
+    interval: str,
 ):
     """Use VectorBT's Indicator Factory API to construct a custom indicator/strategy"""
 
@@ -142,57 +139,3 @@ def run_strategy_handler(
     pf = vbt.Portfolio.from_signals(prices["Close"], entries, exits)
 
     return pf, figs
-
-symbol = "TSLA"
-end_time = datetime.datetime.now()
-start_time = end_time - datetime.timedelta(days=365)
-data = {
-    'rsi': [
-        # {
-        #     'inputs': ['Close'],
-        #     'params': {
-        #         'exit': 80,
-        #         'entry': 20,
-        #         'window': 20
-        #     }
-        # },
-    ],
-    'ma': [
-        # {
-        #     'inputs': ['Close'],
-        #     'params': {
-        #         'window': 20
-        #     },
-        # },
-        # {
-        #     'inputs': ['Close'],
-        #     'params': {
-        #         'fast_window': 10,
-        #         'slow_window': 30
-        #     },
-        # }
-    ],
-    'stoch': [
-        # {
-        #     'inputs': ['Close', 'Low', 'High'],
-        #     'params': {
-        #         'entry': 20,
-        #         'exit': 80,
-        #         'k_window': 14,
-        #         'd_window': 3,
-        #     }
-        # }
-    ],
-    'bbands': [
-        {
-            'inputs': ['Close'],
-            'params': {
-                'window': 20,
-                'alpha': 1.5
-            }
-        }
-    ],
-    'atr': [],
-}
-
-print(run_strategy_handler(symbol=symbol, start_time=start_time, data=data))

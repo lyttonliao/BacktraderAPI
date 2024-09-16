@@ -2,9 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # from contextlib import asynccontextmanager
 
-from .routers import strategies
-from .utils.errors import register_error_handlers
-from .utils.config import app_settings
+from app.routers import strategies, run_strategy
+from app.utils.errors import register_error_handlers
+from app.utils.config import app_settings
 # from .database.session import session_manager
 
 
@@ -44,6 +44,7 @@ app = FastAPI(
 )
 
 app.include_router(strategies.router)
+app.include_router(run_strategy.router)
 
 register_error_handlers(app)
 

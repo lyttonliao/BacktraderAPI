@@ -20,6 +20,7 @@ pyjwt = "^2.9.0"
 pydantic-settings = "^2.4.0"
 asyncpg = "^0.29.0"
 uvicorn = "^0.30.5"
+yfinance = "^0.2.43"
 
 
 [build-system]

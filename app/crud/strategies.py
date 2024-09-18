@@ -7,7 +7,9 @@ from app.schemas.strategy import Strategy, StrategyUpdate, StrategyCreate
 from app.utils.errors import RecordNotFoundError, StatusForbiddenError
 
 
-async def get_strategies(db: AsyncSession, offset: int = 0, limit: int = 20) -> Sequence[Strategy]:
+async def get_strategies(
+    db: AsyncSession, offset: int = 0, limit: int = 20
+) -> Sequence[Strategy]:
     results = await db.execute(select(strategy_model).limit(limit).offset(offset))
     db_strategies = results.scalars().all()
     return db_strategies
@@ -20,7 +22,7 @@ async def get_strategy(db: AsyncSession, strategy_id: int) -> Strategy:
 
     if db_strategy is None:
         raise RecordNotFoundError
-    
+
     return db_strategy
 
 
@@ -32,9 +34,11 @@ async def create_user_strategy(db: AsyncSession, params: StrategyCreate) -> Stra
     return db_strategy
 
 
-async def update_user_strategy(db: AsyncSession, params: StrategyUpdate, strategy_id: int, user_id: int) -> Strategy:
+async def update_user_strategy(
+    db: AsyncSession, params: StrategyUpdate, strategy_id: int, user_id: int
+) -> Strategy:
     db_strategy = await get_strategy(db, strategy_id)
-    
+
     if not db_strategy:
         raise RecordNotFoundError
     if db_strategy.user_id != user_id:
@@ -42,7 +46,7 @@ async def update_user_strategy(db: AsyncSession, params: StrategyUpdate, strateg
 
     for attr, value in params.model_dump(exclude_unset=True).items():
         setattr(db_strategy, attr, value)
-    
+
     db.add(db_strategy)
     await db.commit()
     await db.refresh(db_strategy)

@@ -47,14 +47,14 @@ app.include_router(strategies.router)
 app.include_router(run_strategy.router)
 
 register_error_handlers(app)
-
+print(app_settings.trusted_origins)
 origins = app_settings.trusted_origins.split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["OPTIONS", "PUT", "PATCH", "DELETE"],
-    allow_headers=["Authorization", "Content-Type"]
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     uvicorn.run(
         app=app,
-        host="0.0.0.0", 
-        port=8000, 
+        host="0.0.0.0",
+        port=8000,
         reload=True,
     )

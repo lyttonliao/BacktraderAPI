@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     debug: bool = False
     trusted_origins: str
-    
+
     version: int = 1
     project_name: str = "BacktestingAPI"
 
@@ -20,6 +20,7 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings():
     settings = Settings()
+    print(settings.db_dsn)
     return settings
 
 

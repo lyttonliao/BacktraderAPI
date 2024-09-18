@@ -5,9 +5,9 @@ from typing import Optional, Dict, List
 
 
 def price_data(
-    symbol: str, 
-    start_time: str, 
-    end_time: str, 
+    symbol: str,
+    start_time: str,
+    end_time: str,
     interval: str,
 ):
     """Downloads data Yahoo Finance through VectorBT's API"""
@@ -21,7 +21,9 @@ def price_data(
     return yf_data
 
 
-def add_rsi_indicator(close: List[int], window: int, entry: float = 20.00, exit: float = 80.00):
+def add_rsi_indicator(
+    close: List[int], window: int, entry: float = 20.00, exit: float = 80.00
+):
     """Add a relative strength index indicator to the custom strategy"""
 
     rsi = vbt.RSI.run(close, window)
@@ -33,7 +35,12 @@ def add_rsi_indicator(close: List[int], window: int, entry: float = 20.00, exit:
     return entries, exits, fig
 
 
-def add_ma_indicator(close: List[int], window: Optional[int] = None, fast_window: Optional[int] = None, slow_window: Optional[int] = None):
+def add_ma_indicator(
+    close: List[int],
+    window: Optional[int] = None,
+    fast_window: Optional[int] = None,
+    slow_window: Optional[int] = None,
+):
     "Add a moving average index indicator to the custom strategy"
 
     print(window, slow_window, fast_window)
@@ -47,13 +54,23 @@ def add_ma_indicator(close: List[int], window: Optional[int] = None, fast_window
         slow_ma = vbt.MA.run(close, slow_window)
         entries = fast_ma.ma_crossed_above(slow_ma.ma)
         exits = fast_ma.ma_crossed_below(slow_ma.ma)
-        fig = fast_ma.plot(ma_trace_kwargs=dict(name=f'Fast MA ({fast_window})'))
-        fig = slow_ma.plot(fig=fig, ma_trace_kwargs=dict(name=f'Slow MA ({slow_window})'))
+        fig = fast_ma.plot(ma_trace_kwargs=dict(name=f"Fast MA ({fast_window})"))
+        fig = slow_ma.plot(
+            fig=fig, ma_trace_kwargs=dict(name=f"Slow MA ({slow_window})")
+        )
 
     return exits, entries, fig
 
 
-def add_stoch_indicator(close: List[int], high: List[int], low: List[int], k_window: int, d_window: int, entry: int = 20, exit: int = 80):
+def add_stoch_indicator(
+    close: List[int],
+    high: List[int],
+    low: List[int],
+    k_window: int,
+    d_window: int,
+    entry: int = 20,
+    exit: int = 80,
+):
     """Add a stochastic oscillator indicator to the custom strategy"""
 
     stoch = vbt.STOCH.run(close, high, low, k_window, d_window)
@@ -79,7 +96,13 @@ def add_bbands_indicator(close: List[int], window: int = 20, alpha: int = 2):
     return entries, exits, fig
 
 
-def add_atr_indicator(close: List[int], high: List[int], low: List[int], window: int = 14, trailing_stop: int = 2):
+def add_atr_indicator(
+    close: List[int],
+    high: List[int],
+    low: List[int],
+    window: int = 14,
+    trailing_stop: int = 2,
+):
     """Add an average true range indicator to the custom strategy"""
 
     atr = vbt.ATR.run(close, high, low, window)
@@ -94,11 +117,11 @@ def add_atr_indicator(close: List[int], high: List[int], low: List[int], window:
 
 
 indicator_map = {
-    'rsi': add_rsi_indicator,
-    'ma': add_ma_indicator,
-    'stoch': add_stoch_indicator,
-    'bbands': add_bbands_indicator,
-    'atr': add_atr_indicator
+    "rsi": add_rsi_indicator,
+    "ma": add_ma_indicator,
+    "stoch": add_stoch_indicator,
+    "bbands": add_bbands_indicator,
+    "atr": add_atr_indicator,
 }
 
 
@@ -126,8 +149,8 @@ def run_strategy_handler(
         fn = indicator_map[ind_type]
 
         for ind in inds:
-            inputs = [prices[input_name] for input_name in ind['inputs']]
-            new_entries, new_exits, fig = fn(*inputs, **ind['params'])
+            inputs = [prices[input_name] for input_name in ind["inputs"]]
+            new_entries, new_exits, fig = fn(*inputs, **ind["params"])
             figs.append(fig)
             if entries.empty and exits.empty:
                 entries = new_entries

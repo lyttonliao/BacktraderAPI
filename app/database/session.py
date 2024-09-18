@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     create_async_engine,
     async_sessionmaker,
-    AsyncConnection
+    AsyncConnection,
 )
 from typing import AsyncGenerator
 
@@ -23,7 +23,7 @@ class DatabaseSessionManager:
     async def close(self):
         if self.engine is None:
             raise InternalServiceError
-        
+
         await self.engine.dispose()
         self.engine = None
         self._sessionmaker = None
@@ -32,7 +32,7 @@ class DatabaseSessionManager:
     async def connect(self) -> AsyncGenerator[AsyncConnection, None]:
         if self.engine is None:
             raise InternalServiceError
-        
+
         async with self.engine.begin() as connection:
             try:
                 yield connection
@@ -41,12 +41,12 @@ class DatabaseSessionManager:
                 raise InternalServiceError
             finally:
                 connection.close()
-            
+
     @contextlib.asynccontextmanager
     async def session(self) -> AsyncGenerator[AsyncSession, None]:
         if not self._sessionmaker:
             raise InternalServiceError
-        
+
         async with self._sessionmaker() as session:
             try:
                 yield session

@@ -15,8 +15,8 @@ def decode_jwt(token: str):
 
     try:
         payload = jwt.decode(
-            token, 
-            key, 
+            token,
+            key,
             algorithms=["ES256"],
             audience="BacktraderAPI",
             issuer="StratCheck",
@@ -26,5 +26,5 @@ def decode_jwt(token: str):
         raise ExpiredTokenError
     except jwt.InvalidTokenError:
         raise InvalidTokenError
-    
+
     return payload

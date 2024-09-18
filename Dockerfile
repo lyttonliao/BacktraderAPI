@@ -23,8 +23,6 @@ COPY ./app/ ./app/app
 
 ENV PYTHONPATH="/app"
 
-EXPOSE 8080
+EXPOSE 8000
 
-USER nonroot:nonroot
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
